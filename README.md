@@ -26,6 +26,8 @@ The C compiler is SDCC.
 
 https://github.com/gbdk-2020/gbdk-2020/releases/latest/download/gbdk-linux64.tar.gz
 
+Untar directly in this repos root directory.
+
 
 https://mgba.io/
 Emulator
