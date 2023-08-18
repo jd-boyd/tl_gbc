@@ -1,0 +1,13 @@
+*.o
+*.lst
+*.map
+*.gb
+*.gbc
+*.ihx
+*.sym
+*.cdb
+*.adb
+*.asm
+
+gbdk/
+*~
