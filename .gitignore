@@ -10,4 +10,7 @@
 *.asm
 
 gbdk/
+bgb/
+GBTD/
+GBMB/
 *~
