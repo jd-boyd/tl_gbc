@@ -38,30 +38,56 @@ void main(void)
     set_sprite_tile(8, 3); //L
     set_sprite_tile(9, 7); //D
 
-    /* move_sprite(0, 88, 78); */
-    /* move_sprite(1, 96, 78); */
-    /* move_sprite(2, 104, 78); */
-    /* move_sprite(3, 112, 78); */
-    /* move_sprite(4, 120, 78); */
+    int h_x = 88;
+    int h_y = 68;
+    int h_dx = 2;
+    int h_dy = 1;
 
-    /* move_sprite(5, 88, 86); */
-    /* move_sprite(6, 96, 86); */
-    /* move_sprite(7, 104, 86); */
-    /* move_sprite(8, 112, 86); */
-    /* move_sprite(9, 120, 86); */
+    int w_x = 88;
+    int w_y = 86;
+    int w_dx = -1;
+    int w_dy = 2;
 
-    position_hello(88, 78);
-    position_world(88, 86);
+    position_hello(h_x, h_y);
+    position_world(w_x, w_y);
 
     SHOW_SPRITES;
 
+#define MAX_X 150
+#define MAX_Y 152
 
     // Loop forever
     while(1) {
-
-
 		// Game main loop processing goes here
 
+        position_hello(h_x, h_y);
+        position_world(w_x, w_y);
+
+        if (h_x + h_dx >= MAX_X
+            || h_x + h_dx < 0 ) {
+            h_dx *= -1;
+        }
+
+        if (h_y + h_dy >= MAX_Y
+            || h_y + h_dy < 1 ) {
+            h_dy *= -1;
+        }
+
+        if (w_x + w_dx >= MAX_X
+            || w_x + w_dx < 0 ) {
+            w_dx *= -1;
+        }
+
+        if (w_y + w_dy >= MAX_Y
+            || w_y + w_dy < 1 ) {
+            w_dy *= -1;
+        }
+
+        h_x += h_dx;
+        h_y += h_dy;
+
+        w_x += w_dx;
+        w_y += w_dy;
 
 		// Done processing, yield CPU and wait for start of next frame
         vsync();
