@@ -3,6 +3,7 @@
 #include <stdbool.h>
 
 #include "hw_tiles.h"
+#include "hw_bg.h"
 
 struct pos {
     uint8_t x;
@@ -83,8 +84,11 @@ void main(void)
 
     set_sprite_tile(ball_sprite, 18); // Ball
 
-    struct pos h_pos = {16U, 78U};
-    struct pos w_pos = {154U, 86U};
+    set_bkg_data(0, 32, HWTiles);
+    set_bkg_tiles(0, 0, 20, 18, HW_BG_DATA);
+
+    struct pos h_pos = {16U, 68U};
+    struct pos w_pos = {154U, 68U};
 
     struct pos ball_pos = {80U, 80U};
     struct vel ball_v = {2, 1};
@@ -94,6 +98,8 @@ void main(void)
     move_sprite(ball_sprite, ball_pos.x, ball_pos.y);
 
     SHOW_SPRITES;
+    SHOW_BKG;
+    DISPLAY_ON;
 
     // Loop forever
     while(1) {
