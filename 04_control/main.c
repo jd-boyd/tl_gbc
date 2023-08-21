@@ -31,6 +31,11 @@ void position_world(const struct pos * p) {
     move_sprite(9, p->x+32, p->y);
 }
 
+inline void move_pos(struct pos * p, const struct vel * v) {
+        p->x += v->dx;
+        p->y += v->dy;
+}
+
 inline void init_sound(void) {
     NR52_REG = 0x80; // is 1000 0000 in binary and turns on sound
     NR50_REG = 0x77; // sets the volume for both left and right channel just set to max 0x77
@@ -51,11 +56,12 @@ const uint8_t ball_sprite = 10;
 
 const uint8_t MAX_X = 150;
 const uint8_t MAX_Y = 152;
+
 void main(void)
 {
     init_sound();
 
-    set_sprite_data(0, 8, HWTiles);
+    set_sprite_data(0, 32, HWTiles);
     set_sprite_tile(0, 1); //H
     set_sprite_tile(1, 2); //E
     set_sprite_tile(2, 3); //L
@@ -72,16 +78,11 @@ void main(void)
 
     struct pos h_pos = {88U, 78U};
 
-    //uint8_t h_x = 88;
-    //uint8_t h_y = 68;
-    int8_t h_dx = 2;
-    int8_t h_dy = 1;
+    struct vel h_v = {2, 1};
 
     struct pos w_pos = {88U, 86U};
-    //uint8_t w_x = 88;
-    //uint8_t w_y = 86;
-    int8_t w_dx = -1;
-    int8_t w_dy = 2;
+
+    struct vel w_v = {-1, 2};
 
     position_hello(&h_pos);
     position_world(&w_pos);
@@ -95,35 +96,37 @@ void main(void)
         position_hello(&h_pos);
         position_world(&w_pos);
 
-        if (h_pos.x + h_dx >= MAX_X
-            || h_pos.x + h_dx < 0 ) {
-            h_dx *= -1;
+        if (h_pos.x + h_v.dx >= MAX_X
+            || h_pos.x + h_v.dx < 0 ) {
+            h_v.dx *= -1;
             should_beep = true;
         }
 
-        if (h_pos.y + h_dy >= MAX_Y
-            || h_pos.y + h_dy < 1 ) {
-            h_dy *= -1;
+        if (h_pos.y + h_v.dy >= MAX_Y
+            || h_pos.y + h_v.dy < 1 ) {
+            h_v.dy *= -1;
             should_beep = true;
         }
 
-        if (w_pos.x + w_dx >= MAX_X
-            || w_pos.x + w_dx < 0 ) {
-            w_dx *= -1;
+        if (w_pos.x + w_v.dx >= MAX_X
+            || w_pos.x + w_v.dx < 0 ) {
+            w_v.dx *= -1;
             should_beep = true;
         }
 
-        if (w_pos.y + w_dy >= MAX_Y
-            || w_pos.y + w_dy < 1 ) {
-            w_dy *= -1;
+        if (w_pos.y + w_v.dy >= MAX_Y
+            || w_pos.y + w_v.dy < 1 ) {
+            w_v.dy *= -1;
             should_beep = true;
         }
 
-        h_pos.x += h_dx;
-        h_pos.y += h_dy;
+        move_pos(&h_pos, &h_v);
+        //h_pos.x += h_v.dx;
+        //h_pos.y += h_v.dy;
 
-        w_pos.x += w_dx;
-        w_pos.y += w_dy;
+        move_pos(&w_pos, &w_v);
+        //w_pos.x += w_v.dx;
+        //w_pos.y += w_v.dy;
 
         if (should_beep) {
             bounce_beep();
