@@ -1,9 +1,10 @@
 #include <gb/gb.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 #include "hw_tiles.h"
 
-void position_hello(int x, int y) {
+void position_hello(uint8_t x, uint8_t y) {
     move_sprite(0, x, y);
     move_sprite(1, x+8, y);
     move_sprite(2, x+16, y);
@@ -13,7 +14,7 @@ void position_hello(int x, int y) {
 }
 
 
-void position_world(int x, int y) {
+void position_world(uint8_t x, uint8_t y) {
     move_sprite(5, x, y);
     move_sprite(6, x+8, y);
     move_sprite(7, x+16, y);
@@ -38,15 +39,15 @@ void main(void)
     set_sprite_tile(8, 3); //L
     set_sprite_tile(9, 7); //D
 
-    int h_x = 88;
-    int h_y = 68;
-    int h_dx = 2;
-    int h_dy = 1;
+    uint8_t h_x = 88;
+    uint8_t h_y = 68;
+    int8_t h_dx = 2;
+    int8_t h_dy = 1;
 
-    int w_x = 88;
-    int w_y = 86;
-    int w_dx = -1;
-    int w_dy = 2;
+    uint8_t w_x = 88;
+    uint8_t w_y = 86;
+    int8_t w_dx = -1;
+    int8_t w_dy = 2;
 
     position_hello(h_x, h_y);
     position_world(w_x, w_y);
