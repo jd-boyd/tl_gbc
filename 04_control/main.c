@@ -135,7 +135,7 @@ void main(void)
 
 
         if (should_beep) {
-            bounce_beep();
+            //bounce_beep();
         }
 
 		// Done processing, yield CPU and wait for start of next frame
