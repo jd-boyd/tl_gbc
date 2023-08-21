@@ -16,19 +16,19 @@ struct vel {
 
 void position_hello(const struct pos * p) {
     move_sprite(0, p->x, p->y);
-    move_sprite(1, p->x+8, p->y);
-    move_sprite(2, p->x+16, p->y);
-    move_sprite(3, p->x+24, p->y);
-    move_sprite(4, p->x+32, p->y);
+    move_sprite(1, p->x, p->y+8);
+    move_sprite(2, p->x, p->y+16);
+    move_sprite(3, p->x, p->y+24);
+    move_sprite(4, p->x, p->y+32);
 }
 
 
 void position_world(const struct pos * p) {
     move_sprite(5, p->x, p->y);
-    move_sprite(6, p->x+8, p->y);
-    move_sprite(7, p->x+16, p->y);
-    move_sprite(8, p->x+24, p->y);
-    move_sprite(9, p->x+32, p->y);
+    move_sprite(6, p->x, p->y+8);
+    move_sprite(7, p->x, p->y+16);
+    move_sprite(8, p->x, p->y+24);
+    move_sprite(9, p->x, p->y+32);
 }
 
 inline void move_pos(struct pos * p, const struct vel * v) {
@@ -54,8 +54,15 @@ inline void bounce_beep(void) {
 
 const uint8_t ball_sprite = 10;
 
-const uint8_t MAX_X = 150;
-const uint8_t MAX_Y = 152;
+const uint8_t BALL_MIN_X = 8;
+const uint8_t BALL_MAX_X = 160;
+
+const uint8_t BALL_MIN_Y = 8;
+const uint8_t BALL_MAX_Y = 160;
+
+const uint8_t PADDLE_MIN_Y = 16;
+const uint8_t PADDLE_MAX_Y = 160 - (5*8);
+const uint8_t BTN_INC = 2;
 
 void main(void)
 {
@@ -76,16 +83,15 @@ void main(void)
 
     set_sprite_tile(ball_sprite, 18); // Ball
 
-    struct pos h_pos = {88U, 78U};
+    struct pos h_pos = {16U, 78U};
+    struct pos w_pos = {154U, 86U};
 
-    struct vel h_v = {2, 1};
-
-    struct pos w_pos = {88U, 86U};
-
-    struct vel w_v = {-1, 2};
+    struct pos ball_pos = {80U, 80U};
+    struct vel ball_v = {2, 1};
 
     position_hello(&h_pos);
     position_world(&w_pos);
+    move_sprite(ball_sprite, ball_pos.x, ball_pos.y);
 
     SHOW_SPRITES;
 
@@ -96,37 +102,37 @@ void main(void)
         position_hello(&h_pos);
         position_world(&w_pos);
 
-        if (h_pos.x + h_v.dx >= MAX_X
-            || h_pos.x + h_v.dx < 0 ) {
-            h_v.dx *= -1;
+        uint8_t keys;
+        keys = joypad();
+        if (keys & J_B && w_pos.y > 16) {
+            w_pos.y -= BTN_INC;
+        }
+        if (keys & J_A && w_pos.y < PADDLE_MAX_Y) {
+            w_pos.y += BTN_INC;
+        }
+
+        if (keys & J_UP && h_pos.y > 16) {
+            h_pos.y -= BTN_INC;
+        }
+        if (keys & J_DOWN && h_pos.y < PADDLE_MAX_Y) {
+            h_pos.y += BTN_INC;
+        }
+
+        if (ball_pos.x + ball_v.dx >= BALL_MAX_X
+            || ball_pos.x + ball_v.dx < BALL_MIN_X ) {
+            ball_v.dx *= -1;
             should_beep = true;
         }
 
-        if (h_pos.y + h_v.dy >= MAX_Y
-            || h_pos.y + h_v.dy < 1 ) {
-            h_v.dy *= -1;
+        if (ball_pos.y + ball_v.dy >= BALL_MAX_Y
+            || ball_pos.y + ball_v.dy < BALL_MIN_Y ) {
+            ball_v.dy *= -1;
             should_beep = true;
         }
 
-        if (w_pos.x + w_v.dx >= MAX_X
-            || w_pos.x + w_v.dx < 0 ) {
-            w_v.dx *= -1;
-            should_beep = true;
-        }
+        move_pos(&ball_pos, &ball_v);
+        move_sprite(ball_sprite, ball_pos.x, ball_pos.y);
 
-        if (w_pos.y + w_v.dy >= MAX_Y
-            || w_pos.y + w_v.dy < 1 ) {
-            w_v.dy *= -1;
-            should_beep = true;
-        }
-
-        move_pos(&h_pos, &h_v);
-        //h_pos.x += h_v.dx;
-        //h_pos.y += h_v.dy;
-
-        move_pos(&w_pos, &w_v);
-        //w_pos.x += w_v.dx;
-        //w_pos.y += w_v.dy;
 
         if (should_beep) {
             bounce_beep();
