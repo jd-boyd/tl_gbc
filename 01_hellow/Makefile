@@ -9,7 +9,7 @@ LCC = $(GBDK_HOME)bin/lcc
 # LCCFLAGS += -v     # Uncomment for lcc verbose output
 
 # You can set the name of the .gb ROM file here
-PROJECTNAME    = HelloWorld
+PROJECTNAME    = 01_HelloWorld
 
 BINS	    = $(PROJECTNAME).gb
 CSOURCES   := $(wildcard *.c)
