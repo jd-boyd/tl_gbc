@@ -108,6 +108,11 @@ void main(void)
         ball_v.dy *= -1;
     }
 
+    if (get_rand_bit()) {
+        ball_v.dx *= -1;
+    }
+
+
     move_hello(&(hello_obj.origin));
     move_world(&(world_obj.origin));
     move_sprite(ball_sprite, ball_obj.origin.x, ball_obj.origin.y);
