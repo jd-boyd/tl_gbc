@@ -1,21 +1,29 @@
 #include <gb/gb.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <rand.h>
+
+#include "sound.h"
 
 #include "hw_tiles.h"
 #include "hw_bg.h"
 
-struct pos {
+typedef struct  {
     uint8_t x;
     uint8_t y;
-};
+} Point;
 
-struct vel {
+typedef struct {
     int8_t dx;
     int8_t dy;
-};
+} Vec;
 
-void position_hello(const struct pos * p) {
+typedef struct {
+    Point origin;
+    Point size;
+} Obj;
+
+void move_hello(const Point * p) {
     move_sprite(0, p->x, p->y);
     move_sprite(1, p->x, p->y+8);
     move_sprite(2, p->x, p->y+16);
@@ -24,7 +32,7 @@ void position_hello(const struct pos * p) {
 }
 
 
-void position_world(const struct pos * p) {
+void move_world(const Point * p) {
     move_sprite(5, p->x, p->y);
     move_sprite(6, p->x, p->y+8);
     move_sprite(7, p->x, p->y+16);
@@ -32,26 +40,16 @@ void position_world(const struct pos * p) {
     move_sprite(9, p->x, p->y+32);
 }
 
-inline void move_pos(struct pos * p, const struct vel * v) {
-        p->x += v->dx;
-        p->y += v->dy;
+inline void move_point(Point * p, const Vec * v) {
+    p->x += v->dx;
+    p->y += v->dy;
 }
 
-inline void init_sound(void) {
-    NR52_REG = 0x80; // is 1000 0000 in binary and turns on sound
-    NR50_REG = 0x77; // sets the volume for both left and right channel just set to max 0x77
-    NR51_REG = 0xFF; // is 1111 1111 in binary, select which chanels we want to use in this case all of them. One bit for the L one bit for the R of all four channels
+bool checkcollisions(const Obj* one, Obj* two){
+    return (one->origin.x >= two->origin.x && one->origin.x <= two->origin.x + two->size.x) && (one->origin.y >= two->origin.y && one->origin.y <= two->origin.y + two->size.y) || (two->origin.x >= one->origin.x && two->origin.x <= one->origin.x + one->size.x) && (two->origin.y >= one->origin.y && two->origin.y <= one->origin.y + one->size.y);
 }
 
-inline void bounce_beep(void) {
-    // Values taken from fidling with sound example program
-    NR10_REG = 0x69;
-    NR11_REG = 0x42;
-    NR12_REG = 0x53;
-    // Last two are frequency, LSB first
-    NR13_REG = 0x77;
-    NR14_REG = 0x86;
-}
+
 
 const uint8_t ball_sprite = 10;
 
@@ -64,6 +62,20 @@ const uint8_t BALL_MAX_Y = 160;
 const uint8_t PADDLE_MIN_Y = 16;
 const uint8_t PADDLE_MAX_Y = 160 - (5*8);
 const uint8_t BTN_INC = 2;
+
+uint16_t seed;
+
+void setup_rand(void) {
+    seed = LY_REG;
+    seed |= (uint16_t)DIV_REG << 8;
+    initrand(seed);
+}
+
+bool get_rand_bit(void) {
+    UINT8 r = ((UINT8)rand()) % 2U;
+    if (r == 0) return false;
+    else return true;
+}
 
 void main(void)
 {
@@ -87,15 +99,18 @@ void main(void)
     set_bkg_data(0, 32, HWTiles);
     set_bkg_tiles(0, 0, 20, 18, HW_BG_DATA);
 
-    struct pos h_pos = {16U, 68U};
-    struct pos w_pos = {154U, 68U};
+    Obj hello_obj = {{16U, 68U}, {8U, 40U}};
+    Obj world_obj = {{154U, 68U}, {8U, 40U}};
 
-    struct pos ball_pos = {80U, 80U};
-    struct vel ball_v = {2, 1};
+    Obj ball_obj = {{80U, 80U}, {8U, 8U}};
+    Vec ball_v = {2, 1};
+    if (get_rand_bit()) {
+        ball_v.dy *= -1;
+    }
 
-    position_hello(&h_pos);
-    position_world(&w_pos);
-    move_sprite(ball_sprite, ball_pos.x, ball_pos.y);
+    move_hello(&(hello_obj.origin));
+    move_world(&(world_obj.origin));
+    move_sprite(ball_sprite, ball_obj.origin.x, ball_obj.origin.y);
 
     SHOW_SPRITES;
     SHOW_BKG;
@@ -103,45 +118,69 @@ void main(void)
 
     // Loop forever
     while(1) {
-		// Game main loop processing goes here
-        bool should_beep = false;
-        position_hello(&h_pos);
-        position_world(&w_pos);
 
         uint8_t keys;
         keys = joypad();
-        if (keys & J_B && w_pos.y > 16) {
-            w_pos.y -= BTN_INC;
+        if (keys & J_B && world_obj.origin.y > 16) {
+            world_obj.origin.y -= BTN_INC;
         }
-        if (keys & J_A && w_pos.y < PADDLE_MAX_Y) {
-            w_pos.y += BTN_INC;
-        }
-
-        if (keys & J_UP && h_pos.y > 16) {
-            h_pos.y -= BTN_INC;
-        }
-        if (keys & J_DOWN && h_pos.y < PADDLE_MAX_Y) {
-            h_pos.y += BTN_INC;
+        if (keys & J_A && world_obj.origin.y < PADDLE_MAX_Y) {
+            world_obj.origin.y += BTN_INC;
         }
 
-        if (ball_pos.x + ball_v.dx >= BALL_MAX_X
-            || ball_pos.x + ball_v.dx < BALL_MIN_X ) {
+        if (keys & J_UP && hello_obj.origin.y > 16) {
+            hello_obj.origin.y -= BTN_INC;
+        }
+        if (keys & J_DOWN && hello_obj.origin.y < PADDLE_MAX_Y) {
+            hello_obj.origin.y += BTN_INC;
+        }
+        move_hello(&(hello_obj.origin));
+        move_world(&(world_obj.origin));
+
+
+		// Game main loop processing goes here
+        bool should_paddle_beep = false;
+        bool should_wall_beep = false;
+
+        if (ball_obj.origin.x + ball_v.dx >= BALL_MAX_X
+            || ball_obj.origin.x + ball_v.dx < BALL_MIN_X ) {
             ball_v.dx *= -1;
-            should_beep = true;
+            should_wall_beep = true;
         }
 
-        if (ball_pos.y + ball_v.dy >= BALL_MAX_Y
-            || ball_pos.y + ball_v.dy < BALL_MIN_Y ) {
+        if (ball_obj.origin.y + ball_v.dy >= BALL_MAX_Y
+            || ball_obj.origin.y + ball_v.dy < BALL_MIN_Y ) {
             ball_v.dy *= -1;
-            should_beep = true;
+            should_wall_beep = true;
         }
 
-        move_pos(&ball_pos, &ball_v);
-        move_sprite(ball_sprite, ball_pos.x, ball_pos.y);
+
+        if(checkcollisions(&hello_obj, &ball_obj)) {
+            should_paddle_beep = true;
+            ball_v.dx *= -1;
+            if (get_rand_bit()) {
+                ball_v.dy *= -1;
+            }
+        }
+
+        if(checkcollisions(&world_obj, &ball_obj)) {
+            should_paddle_beep = true;
+            ball_v.dx *= -1;
+            if (get_rand_bit()) {
+                ball_v.dy *= -1;
+            }
+        }
+
+        move_point(&ball_obj.origin, &ball_v);
+        move_sprite(ball_sprite, ball_obj.origin.x, ball_obj.origin.y);
+
+        if (should_paddle_beep) {
+            paddle_bounce_beep();
+        }
 
 
-        if (should_beep) {
-            //bounce_beep();
+        if (should_wall_beep) {
+            //wall_bounce_beep();
         }
 
 		// Done processing, yield CPU and wait for start of next frame
