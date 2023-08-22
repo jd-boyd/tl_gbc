@@ -5,8 +5,7 @@
 void main(void)
 {
     while(1) {
-
-		// Done processing, yield CPU and wait for start of next frame
+		// Yield CPU and wait for start of next frame
         vsync();
     }
 }

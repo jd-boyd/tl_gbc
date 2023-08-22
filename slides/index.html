@@ -16,23 +16,134 @@
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section>Developing for GameBoy for Fun and No Profit</section>
-				<section>Who Am I?</section>
-				<section>What is GameBoy</section>
-				<section>Tools</section>
-				<section>00 Nothing</section>
-				<section>Sprites</section>
-				<section>01 Hello World</section>
-                <section>02_movement</section>
-                <section>Registers</section>
-                <section>Sound?</section>
-                <section>03_sound</section>
-                <section>04_control</section>
-				<section>Tile Maps</section>
-                <section>05_bg</section>
-                <section>06_collision</section>
-                <section>07_scoring</section>
-                <section>Conclusion</section>
+
+			  <section>Developing for GameBoy for Fun and No Profit</section>
+
+	          <section>Who Am I?</section>
+
+	          <section data-markdown>
+                <textarea data-template>
+                  ## What is GameBoy?
+
+                  Handheld from 1989.
+
+                  Z80-ish CPU.
+
+                  8KB RAM
+
+                  32KB ROM (very oversimplified).
+                </textarea>
+              </section>
+
+	          <section>Was going to do Gameboy Color instead.<br/>
+                Instead cut back for time.
+                </section>
+
+	          <section>
+                <h3>Tools</h3>
+
+                <p class="fragment">gbdk-2020<br/>
+                Uses LCC C compiler for Z80 </p>
+
+                <p class="fragment">bgb emulator</p>
+                <p class="fragment">gbtd tile editor</p>
+                <p class="fragment">gbmb tile map editor</p>
+              </section>
+
+
+	          <section>
+                <h3>Tools (cont)</h3>
+
+                <p>bgb emulator<br/>
+                gbtd tile editor<br/>
+                gbmb tile map editor</p>
+                <p class="fragment">The last 3 are win32, </p>
+                <p class="fragment">but JustWork(tm) in WINE.</p>
+              </section>
+
+	          <section>00 Nothing
+                <pre><code data-trim data-noescape>
+#include <gb/gb.h>
+#include <stdint.h>
+
+
+void main(void)
+{
+    while(1) {
+        // Yield CPU and wait for start of next frame
+        vsync();
+    }
+}
+  </code></pre></section>
+
+              <section>Makefile Simple
+                <pre><code data-trim data-noescape>
+LCC = ../gbdk/bin/lcc
+
+# You can set the name of the .gb ROM file here
+PROJECTNAME    = 00_Nothing
+
+all:	00_Nothing.gb
+
+# Compile and link all source files in a single call to LCC
+00_Nothing.gb:	main.c
+	$(LCC) -o $@ main.c
+
+clean:
+	rm -f *.o *.lst *.map *.gb *.ihx *.sym *.cdb *.adb *.asm
+  </code></pre></section>
+
+              <section>Makefile Used
+                <pre><code data-trim data-noescape>
+# If you move this project you can change the directory
+# to match your GBDK root directory (ex: GBDK_HOME = "C:/GBDK/"
+GBDK_HOME = ../gbdk/
+
+LCC = $(GBDK_HOME)bin/lcc
+
+# You can uncomment the line below to turn on debug output
+# LCCFLAGS += -debug # Uncomment to enable debug output
+# LCCFLAGS += -v     # Uncomment for lcc verbose output
+
+# You can set the name of the .gb ROM file here
+PROJECTNAME    = 01_HelloWorld
+
+BINS	    = $(PROJECTNAME).gb
+CSOURCES   := $(wildcard *.c)
+
+all:	$(BINS)
+
+# Compile and link all source files in a single call to LCC
+$(BINS):	$(CSOURCES)
+	$(LCC) $(LCCFLAGS) -o $@ $(CSOURCES)
+
+clean:
+	rm -f *.o *.lst *.map *.gb *.ihx *.sym *.cdb *.adb *.asm
+  </code></pre></section>
+
+	          <section>Sprites</section>
+
+	          <section>01 Hello World</section>
+
+              <section>02_movement</section>
+
+              <section>Registers</section>
+
+              <section>Sound?</section>
+
+              <section>03_sound</section>
+
+              <section>04_control</section>
+
+	          <section>Tile Maps</section>
+
+              <section>05_bg</section>
+
+              <section>06_collision</section>
+
+              <section>07_scoring</section>
+
+              <section>Conclusion</section>
 
 			</div>
 		</div>
