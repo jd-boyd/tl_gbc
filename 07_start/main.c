@@ -40,6 +40,15 @@ void move_world(const Point * p) {
     move_sprite(9, p->x, p->y+32);
 }
 
+void hide_start(void) {
+    move_sprite(11, 65U, 0U); //S
+    move_sprite(12, 71U, 0U); //T
+    move_sprite(13, 77U, 0U); //A
+    move_sprite(14, 83U, 0U); //R
+    move_sprite(15, 89U, 0U); //T
+}
+
+
 inline void move_point(Point * p, const Vec * v) {
     p->x += v->dx;
     p->y += v->dy;
@@ -56,7 +65,7 @@ const uint8_t ball_sprite = 10;
 const uint8_t BALL_MIN_X = 8;
 const uint8_t BALL_MAX_X = 160;
 
-const uint8_t BALL_MIN_Y = 8;
+const uint8_t BALL_MIN_Y = 16;
 const uint8_t BALL_MAX_Y = 160;
 
 const uint8_t PADDLE_MIN_Y = 16;
@@ -81,7 +90,8 @@ void main(void)
 {
     init_sound();
 
-    set_sprite_data(0, 32, HWTiles);
+    set_sprite_data(0, 28, HWTiles);
+
     set_sprite_tile(0, 1); //H
     set_sprite_tile(1, 2); //E
     set_sprite_tile(2, 3); //L
@@ -96,6 +106,18 @@ void main(void)
 
     set_sprite_tile(ball_sprite, 18); // Ball
 
+    set_sprite_tile(11, 25); //S
+    set_sprite_tile(12, 26); //T
+    set_sprite_tile(13, 27); //A
+    set_sprite_tile(14, 6); //R
+    set_sprite_tile(15, 26); //T
+
+    move_sprite(11, 65U, 72U); //S
+    move_sprite(12, 71U, 72U); //T
+    move_sprite(13, 77U, 72U); //A
+    move_sprite(14, 83U, 72U); //R
+    move_sprite(15, 89U, 72U); //T
+
     set_bkg_data(0, 32, HWTiles);
     set_bkg_tiles(0, 0, 20, 18, HW_BG_DATA);
 
@@ -107,28 +129,42 @@ void main(void)
 
     Obj ball_obj = {{80U, 80U}, {8U, 8U}};
     Vec ball_v = {2, 1};
-    if (get_rand_bit()) {
-        ball_v.dy *= -1;
-    }
-
-    if (get_rand_bit()) {
-        ball_v.dx *= -1;
-    }
-
 
     move_hello(&(hello_obj.origin));
     move_world(&(world_obj.origin));
-    move_sprite(ball_sprite, ball_obj.origin.x, ball_obj.origin.y);
+    move_sprite(ball_sprite, ball_obj.origin.x, 0);
 
     SHOW_SPRITES;
     SHOW_BKG;
     DISPLAY_ON;
+
+    uint8_t game_mode = 0; // 0 = start, 1 = run
 
     // Loop forever
     while(1) {
 
         uint8_t keys;
         keys = joypad();
+
+        if (game_mode == 0) {
+            if (keys & J_START) {
+                game_mode = 1;
+                hide_start();
+
+                setup_rand();
+                if (get_rand_bit()) {
+                    ball_v.dy *= -1;
+                }
+
+                if (get_rand_bit()) {
+                    ball_v.dx *= -1;
+                }
+                continue;
+            }
+            vsync();
+            continue;
+        }
+
         if (keys & J_B && world_obj.origin.y > 16) {
             world_obj.origin.y -= BTN_INC;
         }
@@ -145,10 +181,10 @@ void main(void)
         move_hello(&(hello_obj.origin));
         move_world(&(world_obj.origin));
 
-
 		// Game main loop processing goes here
         bool should_paddle_beep = false;
         bool should_wall_beep = false;
+
 
         if (ball_obj.origin.x + ball_v.dx >= BALL_MAX_X
             || ball_obj.origin.x + ball_v.dx < BALL_MIN_X ) {
@@ -161,7 +197,6 @@ void main(void)
             ball_v.dy *= -1;
             should_wall_beep = true;
         }
-
 
         if(checkcollisions(&hello_obj, &ball_obj)) {
             should_paddle_beep = true;
