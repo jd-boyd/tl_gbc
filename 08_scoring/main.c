@@ -48,7 +48,6 @@ void hide_start(void) { // Sprites at y=0 or y=8 are hidden.
     move_sprite(15, 89U, 0U); //T
 }
 
-
 inline void move_point(Point * p, const Vec * v) {
     p->x += v->dx;
     p->y += v->dy;
@@ -58,7 +57,20 @@ bool checkcollisions(const Obj* one, Obj* two){
     return (one->origin.x >= two->origin.x && one->origin.x <= two->origin.x + two->size.x) && (one->origin.y >= two->origin.y && one->origin.y <= two->origin.y + two->size.y) || (two->origin.x >= one->origin.x && two->origin.x <= one->origin.x + one->size.x) && (two->origin.y >= one->origin.y && two->origin.y <= one->origin.y + one->size.y);
 }
 
+const uint8_t digit_lut[10] = {17, 8, 9, 10, 11, 12, 13, 14, 15, 16};
 
+// Tiles 8-17 are 1-9,0
+void update_hello_score(uint8_t score) {
+    set_sprite_tile(16, digit_lut[score/100U]);
+    set_sprite_tile(17, digit_lut[score/10U]);
+    set_sprite_tile(18, digit_lut[score%10U]);
+}
+
+void update_world_score(uint8_t score) {
+    set_sprite_tile(19, digit_lut[score/100U]);
+    set_sprite_tile(20, digit_lut[score/10U]);
+    set_sprite_tile(21, digit_lut[score%10U]);
+}
 
 const uint8_t ball_sprite = 10;
 
@@ -145,6 +157,9 @@ void main(void)
     Obj hello_gate_obj = {{0U, 48U}, {8U, 48U}};
     Obj world_gate_obj = {{160U, 48U}, {8U, 48U}};
 
+    uint8_t hello_score = 0;
+    uint8_t world_score = 0;
+
     Obj ball_obj = {{80U, 80U}, {8U, 8U}};
     Vec ball_v = {2, 1};
 
@@ -204,6 +219,16 @@ void main(void)
         bool should_wall_beep = false;
 
 
+        if(checkcollisions(&hello_gate_obj, &ball_obj)) {
+            hello_score++;
+            update_hello_score(hello_score);
+        }
+
+        if(checkcollisions(&world_gate_obj, &ball_obj)) {
+            world_score++;
+            update_world_score(world_score);
+        }
+
         if (ball_obj.origin.x + ball_v.dx >= BALL_MAX_X
             || ball_obj.origin.x + ball_v.dx < BALL_MIN_X ) {
             ball_v.dx *= -1;
@@ -231,6 +256,7 @@ void main(void)
                 ball_v.dy *= -1;
             }
         }
+
 
         move_point(&ball_obj.origin, &ball_v);
         move_sprite(ball_sprite, ball_obj.origin.x, ball_obj.origin.y);
