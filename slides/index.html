@@ -17,21 +17,24 @@
 		<div class="reveal">
 			<div class="slides">
 
-			  <section>Developing for GameBoy for Fun and No Profit</section>
-
-	          <section>Who Am I?</section>
+			  <section><h2>Developing for GameBoy</h2>
+                 for Fun and almost certainly No Profit</section>
 
 	          <section data-markdown>
                 <textarea data-template>
                   ## What is GameBoy?
 
-                  Handheld from 1989.
+                  Handheld from 1989
 
-                  Z80-ish CPU.
+                  Z80-ish CPU
 
-                  8KB RAM
+                  8KB RAM (so much after NES' 2KB)
 
-                  32KB ROM (very oversimplified).
+                  32KB ROM (very oversimplified)
+
+                  160x144 greyish/greenish screen
+
+                  Some amount of noise making
                 </textarea>
               </section>
 
@@ -61,9 +64,11 @@
                 <p class="fragment">but JustWork(tm) in WINE.</p>
               </section>
 
-	          <section>00 Nothing
-                <pre><code data-trim data-noescape>
-#include <gb/gb.h>
+	          <section data-markdown>
+                <textarea data-template>
+                  ### 00 Nothing
+```
+                  #include <gb/gb.h>
 #include <stdint.h>
 
 
@@ -74,9 +79,10 @@ void main(void)
         vsync();
     }
 }
-  </code></pre></section>
+```
+  </textarea></section>
 
-              <section>Makefile Simple
+              <section><h2>Makefile Simple</h2>
                 <pre><code data-trim data-noescape>
 LCC = ../gbdk/bin/lcc
 
@@ -93,7 +99,7 @@ clean:
 	rm -f *.o *.lst *.map *.gb *.ihx *.sym *.cdb *.adb *.asm
   </code></pre></section>
 
-              <section>Makefile Used
+              <section><h2>Makefile Used</h2>
                 <pre><code data-trim data-noescape>
 # If you move this project you can change the directory
 # to match your GBDK root directory (ex: GBDK_HOME = "C:/GBDK/"
@@ -121,29 +127,238 @@ clean:
 	rm -f *.o *.lst *.map *.gb *.ihx *.sym *.cdb *.adb *.asm
   </code></pre></section>
 
-	          <section>Sprites</section>
+	          <section><h2>Sprites</h2></section>
 
-	          <section>01 Hello World</section>
+	          <section data-markdown>
+                <textarea data-template>
+                  ### 01 Hello World
+                  ```
+#include <gb/gb.h>
+#include <stdint.h>
 
-              <section>02_movement</section>
+#include "hw_tiles.h"
 
-              <section>Registers</section>
+void main(void) {
+    set_sprite_data(0, 8, HWTiles);
+    set_sprite_tile(0, 1); //H
+    set_sprite_tile(1, 2); //E
+    set_sprite_tile(2, 3); //L
+    set_sprite_tile(3, 3); //L
+    set_sprite_tile(4, 4); //O
 
-              <section>Sound?</section>
+    move_sprite(0, 88, 78);
+    move_sprite(1, 96, 78);
+    move_sprite(2, 104, 78);
+    move_sprite(3, 112, 78);
+    move_sprite(4, 120, 78);
 
-              <section>03_sound</section>
+    set_sprite_tile(5, 5); //W
+    set_sprite_tile(6, 4); //O
+    set_sprite_tile(7, 6); //R
+    set_sprite_tile(8, 3); //L
+    set_sprite_tile(9, 7); //D
 
-              <section>04_control</section>
+    move_sprite(5, 88, 86);
+    move_sprite(6, 96, 86);
+    move_sprite(7, 104, 86);
+    move_sprite(8, 112, 86);
+    move_sprite(9, 120, 86);
 
-	          <section>Tile Maps</section>
+    SHOW_SPRITES;
 
-              <section>05_bg</section>
+    while(1) {
+        vsync();
+    }
+}
+```
+  </textarea></section>
 
-              <section>06_collision</section>
+              <section data-markdown>
+                <textarea data-template>
+                  ### 02 Movement
 
-              <section>07_scoring</section>
+```
+void position_hello(uint8_t x, uint8_t y) {
+    move_sprite(0, x, y);
+    move_sprite(1, x+8, y);
+    move_sprite(2, x+16, y);
+    move_sprite(3, x+24, y);
+    move_sprite(4, x+32, y);
+}
 
-              <section>Conclusion</section>
+void position_world(uint8_t x, uint8_t y) {
+    move_sprite(5, x, y);
+    move_sprite(6, x+8, y);
+    move_sprite(7, x+16, y);
+    move_sprite(8, x+24, y);
+    move_sprite(9, x+32, y);
+}
+```
+                  </textarea></section>
+
+	          <section data-markdown>
+                <textarea data-template>
+                  ### Registers (pointers)
+
+                  ```
+                  int x = 5;
+                  int *y = &x;
+                  printf("y: 0x%d", y);
+                  ```
+
+                  Displays something like:
+                  ```
+                  y: 0xdead
+                  ```
+</textarea></section>
+
+              	          <section data-markdown>
+                <textarea data-template>
+                  ### Registers (pointers)
+
+                  ```
+                  int *y = 0xdead;
+                  ```
+
+                  How do you know this is legal?
+</textarea></section>
+
+              	          <section data-markdown>
+                <textarea data-template>
+                  ### Registers (Memory)
+
+                  Memory is an array of 0x0000 to 0xffff;
+                   </textarea></section>
+
+              	          <section data-markdown>
+                <textarea data-template>
+                  ### Registers (Memory)
+
+                  Memory is an array of 0x0000 to 0xffff.
+
+                  Actually, half that is rom: 0x0000 to 0x7FFF.
+
+                  0xC000 to 0xDFFF is RAM.
+
+                   </textarea></section>
+
+              	          <section data-markdown>
+                <textarea data-template>
+                  ### Registers (Memory IO)
+
+                  Memory is an array of 0x0000 to 0xffff.
+
+                  Actually, half that is rom: 0x0000 to 0x7FFF.
+
+                  0xC000 to 0xDFFF is RAM.
+
+                  What is the other stuff?  Some of it are io devices
+                  that work by snooping the memory.
+
+                   </textarea></section>
+
+
+      	          <section data-markdown>
+                <textarea data-template>
+                  ### Registers (Memory IO Cont.)
+
+                  What is the other stuff?  Some of it are io devices
+                  that work by snooping the memory.
+
+                  Such as all that that graphics stuff we did, but
+                  hidden behind functions.
+
+                   </textarea></section>
+
+
+      	          <section data-markdown>
+                <textarea data-template>
+                  ### Sound
+
+                  GBDK-2020 doesn't provide nice functions for sound,
+                  probably because sound is simple enough, or they
+                  figure you will use some sound library.
+
+                  0xFF10 to 0xFF3F, but GBDK does create pointers with
+                  names like NR12 (match to the documentation) that
+                  point to the correct devices.
+                  </textarea></section>
+
+
+      	          <section data-markdown>
+                <textarea data-template>
+                  ### Sound
+
+                  I just copied data from screwing around in example programs.
+
+                  </textarea></section>
+
+
+                  <section data-markdown>
+                <textarea data-template>
+                  ### 03 Sound
+
+                  General Configuration:
+                  ```
+                  NR52_REG = 0x80;
+                  NR50_REG = 0x77;
+                  NR51_REG = 0xFF;
+                  ```
+                  </textarea></section>
+
+
+                  <section data-markdown>
+                <textarea data-template>
+                  ### 03 Sound (pt 2)
+
+                  Play a sound with the first square wave channel:
+                  ```
+                  NR10_REG = 0x69;
+                  NR11_REG = 0x42;
+                  NR12_REG = 0x53;
+                  // Last two are frequency, LSB first
+                  NR13_REG = 0x77;
+                  NR14_REG = 0x86;
+                  ```
+
+                  When I added more sounds, I just messed with those
+                  last two values.
+
+                  </textarea></section>
+
+
+
+                  <section data-markdown>
+                <textarea data-template>
+                  ### 04 Control
+                  </textarea></section>
+
+                  <section data-markdown>
+                <textarea data-template>
+                  ### Tile Maps
+                  </textarea></section>
+
+                  <section data-markdown>
+                <textarea data-template>
+                  ### 05 BG
+                  </textarea></section>
+
+                  <section data-markdown>
+                <textarea data-template>
+                  ### 06 Collision
+                  </textarea></section>
+
+                  <section data-markdown>
+                <textarea data-template>
+                  ### 07 Start
+                  </textarea></section>
+
+                  <section data-markdown>
+                <textarea data-template>
+                  ### 08 Scoring
+                  </textarea></section>
+
+                  <section><h2>Conclusion</h2></section>
 
 			</div>
 		</div>
