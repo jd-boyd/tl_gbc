@@ -20,26 +20,89 @@
 			  <section><h2>Developing for GameBoy</h2>
                  for Fun and almost certainly No Profit</section>
 
-	          <section data-markdown>
-                <textarea data-template>
-                  ## What is GameBoy?
+			  <section>
+                The code and slides are available at:
+                <a href="https://github.com/jd-boyd/tl_gbc">
+                  https://github.com/jd-boyd/tl_gbc</a>
 
-                  Handheld from 1989
+                <img src="qr_code.png">
+              </section>
 
-                  Z80-ish CPU
+			  <section>
+                <h2>Why gameboy?</h2>
+                <img src="grimace.png"></h3>
 
-                  8KB RAM (so much after NES' 2KB)
 
-                  32KB ROM (very oversimplified)
-
-                  160x144 greyish/greenish screen
-
-                  Some amount of noise making
-                </textarea>
+<aside class="notes">
+  Was thinking of other classic game systems, particularly GBA or
+  Genesis, then a new GBC game in 2023.
+  </aside>
               </section>
 
 	          <section>Was going to do Gameboy Color instead.<br/>
                 Instead cut back for time.
+                </section>
+
+              <section>
+                <h2>What is GameBoy?</h2>
+
+                  Handheld from 1989<Br/>
+                  Z80-ish CPU<Br/>
+
+                  8KB RAM <Br/>
+
+                  32KB ROM (oversimplified)<Br/>
+
+                  160x144 greyish/greenish screen<Br/>
+
+                  Some amount of noise making<Br/>
+
+              </section>
+
+	          <section>
+                <h3>Tools Not Used<br/>
+                  <img src="gbstudio_screenshot_win_1_v3.png"></h3>
+
+                <aside class="notes">
+                  A lot of it looks really cool, but no-code solution.
+                </aside>
+
+                </section>
+
+	          <section data-markdown>
+                <textarea data-template>
+                # Tools Not Used
+                Assembly
+```
+;       ---------------------------------
+; Function move_world
+; ---------------------------------
+_move_world::
+        add     sp, #-4
+        ld      c, e
+        ld      b, d
+;main.c:36: move_sprite(5, p->x, p->y);
+        ld      l, c
+        ld      h, b
+        inc     hl
+        inc     sp
+        inc     sp
+        ld      e, l
+        ld      d, h
+        push    de
+        ld      a, (de)
+        ldhl    sp,     #2
+        ld      (hl+), a
+        ld      a, (bc)
+        ld      (hl-), a
+        ld      de, #_shadow_OAM+20
+        ld      a, (hl+)
+        ld      (de), a
+        inc     de
+        ld      a, (hl)
+        ld      (de), a
+```
+                </textarea>
                 </section>
 
 	          <section>
@@ -81,6 +144,9 @@ void main(void)
 }
 ```
   </textarea></section>
+
+              <section>TODO: Insert pic of blank screen.</section>
+
 
               <section><h2>Makefile Simple</h2>
                 <pre><code data-trim data-noescape>
@@ -127,7 +193,10 @@ clean:
 	rm -f *.o *.lst *.map *.gb *.ihx *.sym *.cdb *.adb *.asm
   </code></pre></section>
 
-	          <section><h2>Sprites</h2></section>
+	          <section><h2>Sprites</h2>
+                <img src="tile_editor.png" />
+
+              </section>
 
 	          <section data-markdown>
                 <textarea data-template>
@@ -172,6 +241,9 @@ void main(void) {
 }
 ```
   </textarea></section>
+
+
+              <section>TODO: Insert pic of Hello World.</section>
 
               <section data-markdown>
                 <textarea data-template>
@@ -228,17 +300,22 @@ void position_world(uint8_t x, uint8_t y) {
                   ### Registers (Memory)
 
                   Memory is an array of 0x0000 to 0xffff;
+
+                  Assembly people would say $0000 to $ffff;
+
+                  Most vintage game system docs are written for
+                  assembly people.
                    </textarea></section>
 
               	          <section data-markdown>
                 <textarea data-template>
                   ### Registers (Memory)
 
-                  Memory is an array of 0x0000 to 0xffff.
+                  Memory is an array of $0000 to $ffff.
 
-                  Actually, half that is rom: 0x0000 to 0x7FFF.
+                  Actually, half that is cartridge ROM: $0000 to $7FFF.
 
-                  0xC000 to 0xDFFF is RAM.
+                  $C000 to $DFFF is RAM.
 
                    </textarea></section>
 
@@ -246,14 +323,14 @@ void position_world(uint8_t x, uint8_t y) {
                 <textarea data-template>
                   ### Registers (Memory IO)
 
-                  Memory is an array of 0x0000 to 0xffff.
+                  Memory is an array of $0000 to $ffff.
 
-                  Actually, half that is rom: 0x0000 to 0x7FFF.
+                  Actually, half that is rom: $0000 to $7FFF.
 
-                  0xC000 to 0xDFFF is RAM.
+                  $C000 to $DFFF is RAM.
 
                   What is the other stuff?  Some of it are io devices
-                  that work by snooping the memory.
+                  that work by snooping the memory bus.
 
                    </textarea></section>
 
@@ -279,7 +356,7 @@ void position_world(uint8_t x, uint8_t y) {
                   probably because sound is simple enough, or they
                   figure you will use some sound library.
 
-                  0xFF10 to 0xFF3F, but GBDK does create pointers with
+                  $FF10 to $FF3F, but GBDK does create pointers with
                   names like NR12 (match to the documentation) that
                   point to the correct devices.
                   </textarea></section>
@@ -327,38 +404,97 @@ void position_world(uint8_t x, uint8_t y) {
                   </textarea></section>
 
 
-
                   <section data-markdown>
                 <textarea data-template>
                   ### 04 Control
+
+                  8 buttons, 8 bits:
+
+                  ```
+                  uint8_t keys;
+                  keys = joypad();
+                  if (keys & J_B) {}
+                  ```
                   </textarea></section>
 
                   <section data-markdown>
                 <textarea data-template>
                   ### Tile Maps
+
+                  <img src="tile_map_editor.png">
+
                   </textarea></section>
 
                   <section data-markdown>
                 <textarea data-template>
                   ### 05 BG
+
+
+                  ```
+                  #include "hw_bg.h"
+                  set_bkg_data(0, 32, HWTiles);
+                  set_bkg_tiles(0, 0, 20, 18, HW_BG_DATA);
+                  ```
+
                   </textarea></section>
 
                   <section data-markdown>
                 <textarea data-template>
                   ### 06 Collision
+
+                  Math of box intersection, too ugly to show and not
+                  reall GB specific.
+
                   </textarea></section>
 
                   <section data-markdown>
                 <textarea data-template>
                   ### 07 Start
+
+```
+void setup_rand(void) {
+    seed = LY_REG;
+    seed |= (uint16_t)DIV_REG << 8;
+    initrand(seed);
+}
+
+bool get_rand_bit(void) {
+    UINT8 r = ((UINT8)rand()) % 2U;
+    if (r == 0) return false;
+    else return true;
+}
+```
                   </textarea></section>
 
-                  <section data-markdown>
-                <textarea data-template>
-                  ### 08 Scoring
-                  </textarea></section>
+			      <section><h2>08 Scoring</h2>
+                    Note: Pretty buggy. <br/ >
+
+<video data-autoplay src="gb_final.mp4"></video>
+
+                  </section>
 
                   <section><h2>Conclusion</h2></section>
+
+                  <section><h2>Things not covered</h2>
+                    <ul>
+                      <li>Color</li>
+                      <li>Scrolling</li>
+                      <li>Saving data</li>
+                      <li>Endless bank switching</li>
+                      <li>Making sense of sound</li>
+                      <li>Debugging</li>
+                      <li>Unit Testing</li>
+                      <li>Profiling</li>
+                  </section>
+
+			  <section>
+                The code and slides are available at:
+                <a href="https://github.com/jd-boyd/tl_gbc">
+                  https://github.com/jd-boyd/tl_gbc</a>
+
+                <img src="qr_code.png">
+
+              </section>
 
 			</div>
 		</div>
