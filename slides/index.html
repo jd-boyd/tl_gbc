@@ -101,30 +101,26 @@ _move_world::
         inc     de
         ld      a, (hl)
         ld      (de), a
-```
+                ```
+Note:
+Who has the time?
+
                 </textarea>
                 </section>
 
 	          <section>
                 <h3>Tools</h3>
 
-                <p class="fragment">gbdk-2020<br/>
+                <p>gbdk-2020<br/>
                 Uses LCC C compiler for Z80 </p>
 
-                <p class="fragment">bgb emulator</p>
-                <p class="fragment">gbtd tile editor</p>
-                <p class="fragment">gbmb tile map editor</p>
-              </section>
+                <p>bgb emulator</p>
+                <p>gbtd tile editor</p>
+                <p>gbmb tile map editor</p>
 
-
-	          <section>
-                <h3>Tools (cont)</h3>
-
-                <p>bgb emulator<br/>
-                gbtd tile editor<br/>
-                gbmb tile map editor</p>
-                <p class="fragment">The last 3 are win32, </p>
-                <p class="fragment">but JustWork(tm) in WINE.</p>
+                <aside class="notes">
+                  The last 3 are win32, but JustWork(tm) in WINE.
+                </aside>
               </section>
 
 	          <section data-markdown>
@@ -145,7 +141,13 @@ void main(void)
 ```
   </textarea></section>
 
-              <section>TODO: Insert pic of blank screen.</section>
+              <section>
+                <img src="blank.png">
+
+                <aside class="notes">
+                  Yep, blank.
+                </aside>
+              </section>
 
 
               <section><h2>Makefile Simple</h2>
@@ -443,7 +445,7 @@ void position_world(uint8_t x, uint8_t y) {
                   ### 06 Collision
 
                   Math of box intersection, too ugly to show and not
-                  reall GB specific.
+                  really GB specific.
 
                   </textarea></section>
 
@@ -481,11 +483,33 @@ bool get_rand_bit(void) {
                       <li>Scrolling</li>
                       <li>Saving data</li>
                       <li>Endless bank switching</li>
+                      <li>Mappers</li>
+                      <li>Serial port</li>
                       <li>Making sense of sound</li>
                       <li>Debugging</li>
-                      <li>Unit Testing</li>
                       <li>Profiling</li>
+                      <li>Unit Testing</li>
+                      </ul>
                   </section>
+
+                  <section><h2>Things not covered</h2>
+                    <img src="gb_fish_sonar.jpeg">
+
+<aside class="notes">
+Gameboy powered sonar fish finder. Real product.
+  </aside>
+
+
+                  </section>
+                                    <section><h2>Things not covered</h2>
+                                      <img src="gbsewing.jpg">
+
+<aside class="notes">
+Gameboy powered CNC embroidery machine.
+  </aside>
+
+                  </section>
+
 
 			  <section>
                 The code and slides are available at:
