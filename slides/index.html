@@ -152,16 +152,11 @@ void main(void)
 
               <section><h2>Makefile Simple</h2>
                 <pre><code data-trim data-noescape>
-LCC = ../gbdk/bin/lcc
-
-# You can set the name of the .gb ROM file here
-PROJECTNAME    = 00_Nothing
-
 all:	00_Nothing.gb
 
 # Compile and link all source files in a single call to LCC
 00_Nothing.gb:	main.c
-	$(LCC) -o $@ main.c
+	../gbdk/bin/lcc -o $@ main.c
 
 clean:
 	rm -f *.o *.lst *.map *.gb *.ihx *.sym *.cdb *.adb *.asm
@@ -245,7 +240,9 @@ void main(void) {
   </textarea></section>
 
 
-              <section>TODO: Insert pic of Hello World.</section>
+              <section>
+                <img src="hw_screen.png">
+              </section>
 
               <section data-markdown>
                 <textarea data-template>
@@ -475,6 +472,19 @@ bool get_rand_bit(void) {
 
                   </section>
 
+
+<section data-markdown="final_code.md"
+         data-separator="^\n\n\n"
+         data-separator-vertical="^\n\n"
+         data-separator-notes="^Note:"
+         data-charset="iso-8859-15">
+    <!--
+        Note that Windows uses `\r\n` instead of `\n` as its linefeed character.
+        For a regex that supports all operating systems, use `\r?\n` instead of `\n`.
+    -->
+</section>
+
+
                   <section><h2>Conclusion</h2></section>
 
                   <section><h2>Things not covered</h2>
@@ -510,7 +520,6 @@ Gameboy powered CNC embroidery machine.
 
                   </section>
 
-
 			  <section>
                 The code and slides are available at:
                 <a href="https://github.com/jd-boyd/tl_gbc">
@@ -519,6 +528,9 @@ Gameboy powered CNC embroidery machine.
                 <img src="qr_code.png">
 
               </section>
+
+              <section><h2>Questions?</h2>
+                </section>
 
 			</div>
 		</div>
