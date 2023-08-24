@@ -18,7 +18,7 @@
 			<div class="slides">
 
 			  <section><h2>Developing for GameBoy</h2>
-                 for Fun and almost certainly No Profit</section>
+                for Fun and almost certainly No Profit</section>
 
 			  <section>
                 The code and slides are available at:
@@ -30,13 +30,13 @@
 
 			  <section>
                 <h2>Why gameboy?</h2>
-                <img src="grimace.png"></h3>
+                <img src="grimace.png">
 
 
-<aside class="notes">
-  Was thinking of other classic game systems, particularly GBA or
-  Genesis, then a new GBC game in 2023.
-  </aside>
+                <aside class="notes">
+                  Was thinking of other classic game systems, particularly GBA or
+                  Genesis, then a new GBC game in 2023.
+                </aside>
               </section>
 
 	          <section>Was going to do Gameboy Color instead.<br/>
@@ -123,7 +123,43 @@ Who has the time?
                 </aside>
               </section>
 
-	          <section data-markdown>
+              <section><h2>Run how?</h2>
+                <ul>
+                  <li>Emulator locally</li>
+                  <li>Emulator web browser</li>
+                  <li>Real hardware</li>
+                  <ul>
+                    <li>EEProm Cart</li>
+                    <li>Flash Cart</li>
+                    <li>SRAM Cart</li>
+                </ul>
+                </section>
+
+              <section>
+
+                <img style="width: 60%; height: auto;" src="everdrive-gb-x5.jpg"/>
+                <aside class="notes">
+                  Hello  controlled up/down.
+                  World controoled a/b.
+                </aside>
+
+                </section>
+
+              <section><h2>GAME?</h2>
+
+                Pong for 2 players. <br/>
+                The paddles are the worlds HELLO
+                and WORLD.
+
+
+                <aside class="notes">
+                  Hello  controlled up/down.
+                  World controoled a/b.
+                </aside>
+
+                </section>
+
+              <section data-markdown>
                 <textarea data-template>
                   ### 00 Nothing
 ```
@@ -257,7 +293,8 @@ void main(void) {
 
 <aside class="notes">
   20 tiles by 18 tiles. <br/>
-  22 x 22
+  22 x 22 <br/>
+  Probably related to scrolling.
   </aside>
 
               </section>
@@ -523,7 +560,7 @@ bool get_rand_bit(void) {
                   </section>
 
                   <section><h2>Things not covered</h2>
-                    <img src="gb_fish_sonar.jpeg">
+                    <img style="width: 60%; height: auto;" src="gb_fish_sonar.jpeg">
 
 <aside class="notes">
 Gameboy powered sonar fish finder. Real product.
@@ -539,6 +576,37 @@ Gameboy powered CNC embroidery machine.
   </aside>
 
                   </section>
+
+
+                                    <section><h2>What next?</h2>
+
+                                      C++ would be cool. <br/>
+
+<aside class="notes">
+
+  </aside>
+
+                                    </section>
+
+                                    <section><h2>What next?</h2>
+
+                                      Lisp?
+
+
+<aside class="notes">
+There are z80 lisps. In this case should probably be compiled.
+  </aside>
+
+                                    </section>
+
+
+
+                                    <section><h2>What next?</h2>
+                                      I'm probably done with Gameboy development.
+
+                                    </section>
+
+
 
 			  <section>
                 The code and slides are available at:
